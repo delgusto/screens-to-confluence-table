@@ -150,10 +150,17 @@ export function App() {
     postToSandbox({ type: "save-templates", templates });
   }, [templates]);
 
+  // Reset prepared state whenever the active template's *contents* change,
+  // not just when the user switches templates. Previously we only watched
+  // activeId — but editing a column (rename, autofill change, etc.) on
+  // the currently active template left `prepared.html` stale, so the next
+  // Copy click produced the old columns. Watching activeTemplate's
+  // reference catches this because useMemo returns a new object when
+  // templates is rewritten by the editor.
   useEffect(() => {
     resetAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeId, scale]);
+  }, [activeTemplate, scale]);
 
   useEffect(() => {
     try {
