@@ -2,12 +2,12 @@
   "name": "Screens to Confluence Table",
   "id": "screens-to-confluence-table",
   "api": "1.0.0",
+  "description": "Turn selected frames into a Confluence review table with Figma embed links, extracted copy, and sign-off checkboxes. One click to copy, paste into Confluence.",
   "main": "dist/code.js",
   "ui": "dist/ui.html",
   "editorType": ["figma"],
   "documentAccess": "dynamic-page",
   "networkAccess": {
-    "allowedDomains": ["https://*.atlassian.net"],
-    "reasoning": "Upload screenshots and write the review table directly to Confluence Cloud pages."
+    "allowedDomains": ["none"]
   }
 }

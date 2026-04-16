@@ -23,7 +23,6 @@ import { buildFilename } from "./lib/filenames";
 import { FrameList } from "./components/FrameList";
 import { TemplatePicker } from "./components/TemplatePicker";
 import { TemplateEditor } from "./components/TemplateEditor";
-import { ApiTestScreen } from "./components/ApiTestScreen";
 
 const MANUAL_URL_KEY = "lastFigmaUrl";
 
@@ -44,7 +43,7 @@ type Status =
   | { kind: "error"; message: string };
 
 export function App() {
-  const [view, setView] = useState<"main" | "editor" | "api-test">("main");
+  const [view, setView] = useState<"main" | "editor">("main");
   const [frames, setFrames] = useState<FrameInfo[]>([]);
   const [fileKey, setFileKey] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>("");
@@ -251,25 +250,13 @@ export function App() {
     );
   }
 
-  if (view === "api-test") {
-    return <ApiTestScreen onClose={() => setView("main")} />;
-  }
-
   return (
     <div className="flex flex-col h-full">
-      <header className="px-3 py-2 border-b border-border flex items-start justify-between gap-2">
-        <div>
-          <h1 className="font-medium">Screens → Confluence</h1>
-          <p className="text-fg-muted text-[11px] mt-0.5">
-            Build a review table from selected frames.
-          </p>
-        </div>
-        <button
-          className="btn-ghost !h-6 !px-1.5 text-[11px] flex-none"
-          onClick={() => setView("api-test")}
-        >
-          Test API
-        </button>
+      <header className="px-3 py-2 border-b border-border">
+        <h1 className="font-medium">Screens → Confluence</h1>
+        <p className="text-fg-muted text-[11px] mt-0.5">
+          Build a review table from selected frames.
+        </p>
       </header>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
