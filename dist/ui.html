@@ -26965,6 +26965,10 @@
         return copyToHtml(frame.copy);
       case "screenshot":
         return `<em>${escapeHtml(frame.pngFilename)}</em>`;
+      case "screenshotInline":
+        return `<img src="${escapeHtml(frame.pngFilename)}" alt="${escapeHtml(
+          frame.name
+        )}" />`;
       case "figmaLink":
         if (!frame.figmaUrl) {
           return `<em>${escapeHtml(frame.name)}</em> (file not published)`;
@@ -26988,6 +26992,7 @@
   }
   var WEIGHT = {
     figmaLink: 8,
+    screenshotInline: 8,
     screenshot: 6,
     copy: 4,
     checklist: 2,
@@ -27174,7 +27179,8 @@
     { value: "screenName", label: "Frame name" },
     { value: "copy", label: "Text from frame" },
     { value: "figmaLink", label: "Figma embed link" },
-    { value: "screenshot", label: "PNG screenshot (drag-drop)" },
+    { value: "screenshotInline", label: "PNG image (bulk drag onto page)" },
+    { value: "screenshot", label: "PNG placeholder (drag per cell)" },
     { value: "checklist", label: "Checklist" }
   ];
   var DEFAULT_CHECKLIST_ITEMS = ["Editor", "Compliance"];
@@ -27451,6 +27457,16 @@
       [templates, activeId]
     );
     const needsScreenshots = (0, import_react2.useMemo)(
+      () => activeTemplate.columns.some(
+        (c) => c.autoFill === "screenshot" || c.autoFill === "screenshotInline"
+      ),
+      [activeTemplate]
+    );
+    const usesBulkDrag = (0, import_react2.useMemo)(
+      () => activeTemplate.columns.some((c) => c.autoFill === "screenshotInline"),
+      [activeTemplate]
+    );
+    const usesPerCellDrag = (0, import_react2.useMemo)(
       () => activeTemplate.columns.some((c) => c.autoFill === "screenshot"),
       [activeTemplate]
     );
@@ -27674,7 +27690,15 @@
             ]
           }
         ),
-        needsScreenshots && prepared && /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(StepList, { step, prepared }),
+        needsScreenshots && prepared && /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+          StepList,
+          {
+            step,
+            prepared,
+            usesBulkDrag,
+            usesPerCellDrag
+          }
+        ),
         status.kind === "copied" && /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "rounded p-2 text-[11px] leading-[1.5] bg-green-50 text-green-900 border border-green-200 space-y-1", children: [
           /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: "font-medium", children: "Copied \u2713" }),
           /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { children: "Paste into your Confluence page." }),
@@ -27751,9 +27775,27 @@
       /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("button", { className: "btn-secondary w-full", onClick: onPrepare, children: "Start over" })
     ] });
   }
-  function StepList({ step, prepared }) {
+  function StepList({
+    step,
+    prepared,
+    usesBulkDrag,
+    usesPerCellDrag
+  }) {
     const downloadDone = step === "copy" || step === "done";
     const copyDone = step === "done";
+    const dragInstructions = [];
+    if (usesBulkDrag) {
+      dragInstructions.push({
+        label: "Drag all PNGs onto the Confluence page",
+        detail: "Select every PNG in the extracted folder and drag them onto the page at once. Confluence attaches each by filename; the <img> tags in the table then resolve to the attachments."
+      });
+    }
+    if (usesPerCellDrag) {
+      dragInstructions.push({
+        label: "Drag each PNG into its row",
+        detail: "Screenshot cells show the filename that belongs there. Drop the file onto the cell \u2014 it attaches and inserts at the same time."
+      });
+    }
     const items = [
       {
         label: "Download screenshots",
@@ -27770,11 +27812,9 @@
         detail: `HTML table (~${formatBytes(prepared.htmlBytes)}).`,
         state: copyDone ? "done" : step === "copy" ? "current" : "upcoming"
       },
-      {
-        label: "Drag each PNG into its row",
-        detail: "Screenshot cells show the filename of the PNG that belongs there. Drop the file onto the cell \u2014 it attaches and inserts at the same time.",
+      ...dragInstructions.map((d) => __spreadProps(__spreadValues({}, d), {
         state: copyDone ? "current" : "upcoming"
-      }
+      }))
     ];
     return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("ol", { className: "rounded border border-border divide-y divide-border", children: items.map((s, i) => /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("li", { className: "flex gap-2 px-2 py-1.5", children: [
       /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(

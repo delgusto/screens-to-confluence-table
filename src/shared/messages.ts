@@ -5,7 +5,8 @@ export type AutoFill =
   | "screenName"
   | "copy"
   | "figmaLink"
-  | "screenshot"
+  | "screenshot" // renders <em>filename.png</em> — user drags PNG per cell
+  | "screenshotInline" // renders <img src="filename.png"> — user drags all PNGs onto page at once
   | "blank"
   | "checklist";
 

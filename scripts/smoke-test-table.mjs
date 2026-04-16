@@ -68,11 +68,23 @@ section(
 );
 
 section(
+  "Mode: PNG inline image (bulk drag)",
+  mod.buildHtmlTable(
+    [
+      { id: "img", title: "UI Screenshot", autoFill: "screenshotInline" },
+      { id: "copy", title: "Copy", autoFill: "copy" },
+      checklist,
+    ],
+    frames
+  )
+);
+
+section(
   "Mode: Both side-by-side",
   mod.buildHtmlTable(
     [
       { id: "link", title: "Live preview", autoFill: "figmaLink" },
-      { id: "png", title: "Screenshot", autoFill: "screenshot" },
+      { id: "png", title: "Screenshot", autoFill: "screenshotInline" },
       { id: "copy", title: "Copy", autoFill: "copy" },
       checklist,
     ],

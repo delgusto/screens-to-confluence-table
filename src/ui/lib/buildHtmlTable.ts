@@ -34,11 +34,21 @@ function cellFor(column: Column, frame: FrameForTable): string {
     case "copy":
       return copyToHtml(frame.copy);
     case "screenshot":
-      // Intentionally a filename label, not an <img>. Confluence doesn't
-      // resolve pasted img src against page attachments, so the cell is
-      // left empty with a filename hint. Dropping the matching PNG onto
-      // the cell both uploads it as an attachment and inserts it inline.
+      // Filename label (no <img> tag). User drags each PNG into its row's
+      // cell in Confluence — the drop both attaches the file and inserts
+      // it inline. Use this when you want guaranteed-resolved images and
+      // can tolerate per-cell drag-drop.
       return `<em>${escapeHtml(frame.pngFilename)}</em>`;
+    case "screenshotInline":
+      // Inline <img> tag referencing the filename. User drags ALL PNGs
+      // onto the Confluence page at once (bulk upload to attachments).
+      // Whether Confluence's editor resolves the src against page
+      // attachments depends on version/config — if it doesn't, the image
+      // shows as broken until the user manually inserts. Worth testing
+      // directly (outside email) to see if it works for your instance.
+      return `<img src="${escapeHtml(frame.pngFilename)}" alt="${escapeHtml(
+        frame.name
+      )}" />`;
     case "figmaLink":
       if (!frame.figmaUrl) {
         return `<em>${escapeHtml(frame.name)}</em> (file not published)`;
@@ -88,6 +98,7 @@ function renderChecklist(items: string[]): string {
 
 const WEIGHT: Record<AutoFill, number> = {
   figmaLink: 8,
+  screenshotInline: 8,
   screenshot: 6,
   copy: 4,
   checklist: 2,

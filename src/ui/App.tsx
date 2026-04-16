@@ -67,10 +67,27 @@ export function App() {
     [templates, activeId]
   );
 
-  // Does this template need PNG bytes? If any column uses "screenshot"
-  // auto-fill, we run the Prepare → Download zip → Copy flow; otherwise
-  // it's a single-click Copy.
+  // Does this template need PNG bytes? Both screenshot modes do — the
+  // per-cell drag mode ("screenshot") and the bulk-drag mode
+  // ("screenshotInline"). Either triggers the Prepare → Download → Copy
+  // flow; otherwise it's a single-click Copy.
   const needsScreenshots = useMemo(
+    () =>
+      activeTemplate.columns.some(
+        (c) =>
+          c.autoFill === "screenshot" || c.autoFill === "screenshotInline"
+      ),
+    [activeTemplate]
+  );
+
+  // Which drag style does the template expect? Matters for the step-4
+  // instructions in the StepList.
+  const usesBulkDrag = useMemo(
+    () =>
+      activeTemplate.columns.some((c) => c.autoFill === "screenshotInline"),
+    [activeTemplate]
+  );
+  const usesPerCellDrag = useMemo(
     () => activeTemplate.columns.some((c) => c.autoFill === "screenshot"),
     [activeTemplate]
   );
@@ -327,7 +344,12 @@ export function App() {
         )}
 
         {needsScreenshots && prepared && (
-          <StepList step={step} prepared={prepared} />
+          <StepList
+            step={step}
+            prepared={prepared}
+            usesBulkDrag={usesBulkDrag}
+            usesPerCellDrag={usesPerCellDrag}
+          />
         )}
 
         {status.kind === "copied" && (
@@ -457,9 +479,37 @@ function renderScreenshotFooter(
   );
 }
 
-function StepList({ step, prepared }: { step: ScreenshotStep; prepared: Prepared }) {
+function StepList({
+  step,
+  prepared,
+  usesBulkDrag,
+  usesPerCellDrag,
+}: {
+  step: ScreenshotStep;
+  prepared: Prepared;
+  usesBulkDrag: boolean;
+  usesPerCellDrag: boolean;
+}) {
   const downloadDone = step === "copy" || step === "done";
   const copyDone = step === "done";
+
+  // Pick the right step-4 copy based on which drag style the template
+  // expects. If both modes are mixed in one template, show both.
+  const dragInstructions: { label: string; detail: string }[] = [];
+  if (usesBulkDrag) {
+    dragInstructions.push({
+      label: "Drag all PNGs onto the Confluence page",
+      detail:
+        "Select every PNG in the extracted folder and drag them onto the page at once. Confluence attaches each by filename; the <img> tags in the table then resolve to the attachments.",
+    });
+  }
+  if (usesPerCellDrag) {
+    dragInstructions.push({
+      label: "Drag each PNG into its row",
+      detail:
+        "Screenshot cells show the filename that belongs there. Drop the file onto the cell — it attaches and inserts at the same time.",
+    });
+  }
 
   const items: {
     label: string;
@@ -483,12 +533,10 @@ function StepList({ step, prepared }: { step: ScreenshotStep; prepared: Prepared
       detail: `HTML table (~${formatBytes(prepared.htmlBytes)}).`,
       state: copyDone ? "done" : step === "copy" ? "current" : "upcoming",
     },
-    {
-      label: "Drag each PNG into its row",
-      detail:
-        "Screenshot cells show the filename of the PNG that belongs there. Drop the file onto the cell — it attaches and inserts at the same time.",
-      state: copyDone ? "current" : "upcoming",
-    },
+    ...dragInstructions.map((d) => ({
+      ...d,
+      state: (copyDone ? "current" : "upcoming") as "current" | "upcoming",
+    })),
   ];
 
   return (

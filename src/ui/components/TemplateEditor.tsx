@@ -14,7 +14,8 @@ const AUTO_FILL_OPTIONS: { value: AutoFill; label: string }[] = [
   { value: "screenName", label: "Frame name" },
   { value: "copy", label: "Text from frame" },
   { value: "figmaLink", label: "Figma embed link" },
-  { value: "screenshot", label: "PNG screenshot (drag-drop)" },
+  { value: "screenshotInline", label: "PNG image (bulk drag onto page)" },
+  { value: "screenshot", label: "PNG placeholder (drag per cell)" },
   { value: "checklist", label: "Checklist" },
 ];
 
