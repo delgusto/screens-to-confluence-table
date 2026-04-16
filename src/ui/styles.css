@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-bg text-fg font-sans text-[12px] leading-[1.4] antialiased;
+  }
+  /* Figma plugin iframes are sized by the sandbox, so this fills the frame */
+  #root {
+    @apply flex flex-col;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded px-3 h-8 text-[12px] font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-white hover:bg-accent-hover;
+  }
+  .btn-secondary {
+    @apply btn bg-muted text-fg hover:bg-border;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-fg hover:bg-muted;
+  }
+  .input {
+    @apply w-full h-7 px-2 rounded border border-border bg-white text-fg text-[12px] focus:outline-none focus:border-accent;
+  }
+  .select {
+    @apply input appearance-none pr-6 bg-[url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2710%27%20height%3D%2710%27%20viewBox%3D%270%200%2010%2010%27%3E%3Cpath%20fill%3D%27%23666%27%20d%3D%27M2%204l3%203%203-3z%27%2F%3E%3C%2Fsvg%3E")] bg-no-repeat bg-[right_0.5rem_center];
+  }
+  .label {
+    @apply block text-[11px] font-medium text-fg-muted mb-1;
+  }
+}

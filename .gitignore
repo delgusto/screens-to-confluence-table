@@ -1,0 +1,9 @@
+node_modules/
+.DS_Store
+*.log
+
+# Build intermediates — but keep dist/ so the work laptop can install the
+# plugin without running npm. The compiled code.js + ui.html + manifest.json
+# are what Figma imports.
+dist/.styles.css
+dist/.smoke-buildHtmlTable.mjs

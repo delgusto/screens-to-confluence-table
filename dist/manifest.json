@@ -1,0 +1,17 @@
+{
+  "name": "Screens to Confluence Table",
+  "id": "screens-to-confluence-table",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": [
+    "figma"
+  ],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": [
+      "https://*.atlassian.net"
+    ],
+    "reasoning": "Upload screenshots and write the review table directly to Confluence Cloud pages."
+  }
+}
