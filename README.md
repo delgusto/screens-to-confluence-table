@@ -45,3 +45,4 @@ Entry points:
 - [src/ui/App.tsx](src/ui/App.tsx) — plugin UI (React + Tailwind)
 - [src/ui/lib/buildHtmlTable.ts](src/ui/lib/buildHtmlTable.ts) — pure HTML table builder with mode-specific cell rendering and colgroup widths
 - [src/shared/messages.ts](src/shared/messages.ts) — typed messages between sandbox and UI
+# screens-to-confluence-table
