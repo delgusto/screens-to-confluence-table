@@ -61,14 +61,25 @@ function cellFor(column: Column, frame: FrameForTable): string {
   }
 }
 
-// Confluence renders its native "action" (task) as <input type="checkbox">
-// in the DOM, and its paste sanitiser preserves input[type=checkbox] — so
-// emitting that directly gives reviewers actual clickable checkboxes.
+// Confluence's native action/task items use a specific DOM structure:
+//   <div data-node-type="action-list">
+//     <div class="task-item" data-node-type="action-item" data-task-state="TODO">
+//       Label text
+//     </div>
+//   </div>
+// Emitting this structure gives the paste handler the best chance of
+// recognising it and rendering real clickable checkboxes. If it strips
+// the data attributes, the fallback is just plain text "Label" per div
+// on separate lines — still readable, just not interactive.
 function renderChecklist(items: string[]): string {
   if (items.length === 0) return "";
-  return items
-    .map((label) => `<input type="checkbox" /> ${escapeHtml(label)}`)
-    .join("<br>");
+  const taskItems = items
+    .map(
+      (label) =>
+        `<div class="task-item" data-node-type="action-item" data-task-state="TODO">${escapeHtml(label)}</div>`
+    )
+    .join("");
+  return `<div data-node-type="action-list">${taskItems}</div>`;
 }
 
 // ─── Column width allocation ──────────────────────────────────────────────

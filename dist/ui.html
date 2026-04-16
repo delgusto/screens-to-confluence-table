@@ -26981,7 +26981,10 @@
   }
   function renderChecklist(items) {
     if (items.length === 0) return "";
-    return items.map((label) => `<input type="checkbox" /> ${escapeHtml(label)}`).join("<br>");
+    const taskItems = items.map(
+      (label) => `<div class="task-item" data-node-type="action-item" data-task-state="TODO">${escapeHtml(label)}</div>`
+    ).join("");
+    return `<div data-node-type="action-list">${taskItems}</div>`;
   }
   var WEIGHT = {
     figmaLink: 8,
